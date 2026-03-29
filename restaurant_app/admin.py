@@ -1,5 +1,5 @@
 from django.contrib import admin
-from ..restaurant.models import Category, Dish, Order, OrderItem
+from auth_system.models import Category, Dish, Order, OrderItem
 
 admin.site.register(Category)
 admin.site.register(Dish)

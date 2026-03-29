@@ -1,6 +1,6 @@
 from django.db import models
 from django.conf import settings
-
+from auth_system.models import Category, Dish, Order, OrderItem
 
 class Category(models.Model):
     name = models.CharField(max_length=100)
