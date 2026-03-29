@@ -38,6 +38,7 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'auth_system',
+    'restaurant_app',
 ]
 
 MIDDLEWARE = [
@@ -117,7 +118,8 @@ USE_TZ = True
 
 STATIC_URL = 'static/'
 
-AUTH_USER_MODEL="auth_system.CustomUser"
-LOGIN_URL = 'auth_system:login'
-LOGIN_REDIRECT_URL = 'polls:index'
-LOGOUT_REDIRECT_URL = 'auth_system:logout'
+AUTH_USER_MODEL = 'auth_system.CustomUser'
+
+LOGIN_URL = 'login'
+LOGIN_REDIRECT_URL = '/'
+LOGOUT_REDIRECT_URL = '/'
