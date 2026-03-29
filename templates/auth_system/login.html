@@ -1,9 +1,24 @@
-{% include "../base.html" %}
+{% extends "base.html" %}
+
 {% block content %}
 <h1>Login</h1>
+
 <form method="post">
     {% csrf_token %}
-    {{ form.as_p }}
-    <button type="submit" class="btn btn-primary">Login</button>
+
+    {{ form.non_field_errors }}
+
+    <p>
+        {{ form.username.label_tag }}
+        {{ form.username }}
+    </p>
+
+    <p>
+        {{ form.password.label_tag }}
+        {{ form.password }}
+    </p>
+
+    <button type="submit">Login</button>
 </form>
-{% endblock content %}
+
+{% endblock %}

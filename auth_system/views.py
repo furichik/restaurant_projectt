@@ -1,24 +1,32 @@
 from django.contrib.auth import login
 from django.contrib.auth.views import LoginView, LogoutView
-from django.forms.models import BaseModelForm
-from django.shortcuts import redirect
+from django.shortcuts import render, redirect
 from django.urls import reverse_lazy
 from django.views.generic import CreateView
 
-from .forms import CustomUserCreationForm
+from .forms import RegisterForm, LoginForm
+
+
+def home(request):
+    return render(request, "home.html")
+
 
 class CustomLoginView(LoginView):
     template_name = "auth_system/login.html"
+    authentication_form = LoginForm   
     redirect_authenticated_user = True
 
+
 class CustomLogoutView(LogoutView):
-    next_page = "auth_system:login"
+    next_page = "home"   
+
 
 class RegisterView(CreateView):
     template_name = "auth_system/register.html"
-    form_class = CustomUserCreationForm
-    
-    def form_valid(self, form: BaseModelForm):
+    form_class = RegisterForm
+    success_url = reverse_lazy("home")
+
+    def form_valid(self, form):
         user = form.save()
         login(self.request, user)
-        return redirect(reverse_lazy("auth_system:login"))
+        return redirect("home")
