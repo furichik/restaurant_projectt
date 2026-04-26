@@ -1,0 +1,33 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="container mt-5" style="max-width: 800px;">
+    <h2>{{ dish.name }}</h2>
+
+    {% if dish.image %}
+        <img src="{{ dish.image.url }}" class="img-fluid mb-3">
+    {% endif %}
+
+    <p>{{ dish.description }}</p>
+    <strong>{{ dish.price }} грн</strong>
+
+    <form method="post" action="{% url 'add_to_cart' dish.id %}">
+        {% csrf_token %}
+
+        <h5 class="mt-4">Прибрати інгредієнти:</h5>
+
+        {% for ingredient in ingredients %}
+            <div class="form-check">
+                <input class="form-check-input" type="checkbox" name="remove_ingredients" value="{{ ingredient.id }}">
+                <label class="form-check-label">
+                    {{ ingredient.name }}
+                </label>
+            </div>
+        {% endfor %}
+
+        <button type="submit" class="btn btn-success mt-3">
+            Додати в кошик
+        </button>
+    </form>
+</div>
+{% endblock %}

@@ -5,7 +5,15 @@ from django.urls import reverse_lazy
 from django.views.generic import CreateView
 
 from .forms import RegisterForm, LoginForm
+from django.shortcuts import render
+from restaurant.models import Order
 
+def profile(request):
+    orders = Order.objects.filter(user=request.user).order_by('-created_at')
+
+    return render(request, 'auth_system/profile.html', {
+        'orders': orders
+    })
 
 def home(request):
     return render(request, "home.html")
