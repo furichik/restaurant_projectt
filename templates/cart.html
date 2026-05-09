@@ -10,7 +10,15 @@
 
                 <div>
                     <h5>{{ item.dish.name }}</h5>
-                    <p>{{ item.dish.price }} грн</p>
+
+                    <p>
+                        {{ item.dish.final_price }} грн
+                        {% if item.dish.final_price != item.dish.price %}
+                            <span class="text-muted text-decoration-line-through">
+                                {{ item.dish.price }}
+                            </span>
+                        {% endif %}
+                    </p>
 
                     {% if item.dish.removed %}
                         <p class="text-danger mb-1">
@@ -43,15 +51,15 @@
 
         <h4 class="mt-4">Всього: {{ total }} грн</h4>
 
+        <form method="post" action="{% url 'checkout' %}">
+            {% csrf_token %}
+            <button class="btn btn-primary mt-3 w-100">
+                Оформити замовлення
+            </button>
+        </form>
+
     {% else %}
         <p>Кошик порожній</p>
     {% endif %}
 </div>
 {% endblock %}
-
-<form method="post" action="{% url 'checkout' %}">
-    {% csrf_token %}
-    <button class="btn btn-primary mt-3 w-100">
-        Оформити замовлення
-    </button>
-</form>

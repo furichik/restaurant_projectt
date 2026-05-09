@@ -1,7 +1,7 @@
 from django.shortcuts import render, redirect, get_object_or_404
 from .models import Category, Dish
 from .models import Order, OrderItem
-
+from django.contrib.auth.decorators import login_required
 
 def menu(request):
     categories = Category.objects.all()
@@ -33,26 +33,37 @@ def add_to_cart(request, dish_id):
 
 def cart_view(request):
     cart = request.session.get('cart', {})
-    dishes = []
+    items = []
     total = 0
 
     for key, item in cart.items():
         dish_id = key.split("_")[0]
         dish = get_object_or_404(Dish, id=dish_id)
 
-        dish.quantity = item['quantity']
-        dish.removed = item['removed']
+        removed = item['removed']
+        quantity = item['quantity']
 
-        dish.total_price = dish.price * dish.quantity
-        total += dish.total_price
+        removed_ingredients = dish.ingredients.filter(name__in=removed)
 
-        dishes.append({
+        removed_price = sum(i.price for i in removed_ingredients)
+
+        final_price = dish.price - removed_price
+        total_price = final_price * quantity
+
+        dish.quantity = quantity
+        dish.removed = removed
+        dish.final_price = final_price
+        dish.total_price = total_price
+
+        total += total_price
+
+        items.append({
             'dish': dish,
-            'key': key,
+            'key': key
         })
 
     return render(request, 'cart.html', {
-        'items': dishes,
+        'items': items,
         'total': total
     })
 
@@ -120,15 +131,21 @@ def checkout(request):
     if not cart:
         return redirect('cart')
 
-    total = 0
     order = Order.objects.create(user=request.user, total_price=0)
+    total = 0
 
     for key, item in cart.items():
         dish_id = key.split("_")[0]
         dish = Dish.objects.get(id=dish_id)
 
+        removed = item['removed']
         quantity = item['quantity']
-        total += dish.price * quantity
+
+        removed_ingredients = dish.ingredients.filter(name__in=removed)
+        removed_price = sum(i.price for i in removed_ingredients)
+
+        final_price = dish.price - removed_price
+        total_price = final_price * quantity
 
         OrderItem.objects.create(
             order=order,
@@ -136,9 +153,29 @@ def checkout(request):
             quantity=quantity
         )
 
+        total += total_price
+
     order.total_price = total
     order.save()
 
     request.session['cart'] = {}
 
     return redirect('profile')
+
+@login_required
+def cancel_order(request, order_id):
+    order = get_object_or_404(Order, id=order_id, user=request.user)
+
+    if order.status == 'new':
+        order.status = 'canceled'
+        order.save()
+
+    return redirect('profile')
+
+@login_required
+def profile(request):
+    orders = Order.objects.filter(user=request.user).order_by('-created_at')
+
+    return render(request, 'auth_system/profile.html', {
+        'orders': orders
+    })

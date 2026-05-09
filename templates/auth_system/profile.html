@@ -3,7 +3,6 @@
 {% block content %}
 <div class="container mt-5">
 
-    <!-- Кнопки -->
     <div class="d-flex justify-content-between align-items-center mb-4">
         <h2>Профіль</h2>
         <a href="{% url 'menu' %}" class="btn btn-primary">Меню</a>
@@ -17,19 +16,37 @@
     <div class="mt-4">
         <h4>Мої замовлення</h4>
 
-        <div class="mt-4">
-    <h4>Мої замовлення</h4>
+        {% for order in orders %}
+            <div class="card p-3 mb-3">
 
-    {% for order in orders %}
-        <div class="card p-3 mb-2">
-            <p><strong>Замовлення #{{ order.id }}</strong></p>
-            <p>Сума: {{ order.total_price }} грн</p>
-            <p>Дата: {{ order.created_at }}</p>
-        </div>
-    {% empty %}
-        <p>Поки що немає замовлень</p>
-    {% endfor %}
-</div>
+                <h5>Замовлення #{{ order.id }}</h5>
+
+                <p>Сума: {{ order.total_price }} грн</p>
+                <p>Дата: {{ order.created_at }}</p>
+
+                <p>
+                    Статус:
+                    {% if order.status == 'new' %}
+                        <span class="text-warning">Новий</span>
+                    {% elif order.status == 'canceled' %}
+                        <span class="text-danger">Скасований</span>
+                    {% elif order.status == 'done' %}
+                        <span class="text-success">Виконаний</span>
+                    {% endif %}
+                </p>
+
+                {% if order.status == 'new' %}
+                    <a href="{% url 'cancel_order' order.id %}" class="btn btn-danger">
+                        Скасувати
+                    </a>
+                {% endif %}
+
+            </div>
+        {% empty %}
+            <p>У вас ще немає замовлень</p>
+        {% endfor %}
+
+    </div>
 
 </div>
 {% endblock %}
