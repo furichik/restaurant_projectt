@@ -2,6 +2,7 @@ from django.shortcuts import render, redirect, get_object_or_404
 from .models import Category, Dish
 from .models import Order, OrderItem
 from django.contrib.auth.decorators import login_required
+from django.http import JsonResponse
 
 def menu(request):
     categories = Category.objects.all()
@@ -104,13 +105,21 @@ def remove_from_cart(request, key):
 def toggle_like(request, dish_id):
     dish = get_object_or_404(Dish, id=dish_id)
 
+    liked = False
+
     if request.user.is_authenticated:
+
         if request.user in dish.likes.all():
             dish.likes.remove(request.user)
+
         else:
             dish.likes.add(request.user)
+            liked = True
 
-    return redirect('menu')
+    return JsonResponse({
+        'likes': dish.likes.count(),
+        'liked': liked
+    })
 
 
 def dish_detail(request, dish_id):

@@ -1,5 +1,56 @@
 {% extends "base.html" %}
 
 {% block content %}
-<h1>Вітаємо в рестораному додатку</h1>
+
+<div class="text-center mt-5">
+
+    <h1 class="display-2 fw-bold mb-4">
+        🍽 Restaurant
+    </h1>
+
+    <p class="lead mb-5">
+        Найкращі страви української, грузинської та італійської кухні
+    </p>
+
+    <a href="{% url 'menu' %}"
+       class="btn btn-danger btn-lg rounded-pill px-5 py-3">
+        Перейти в меню
+    </a>
+
+</div>
+
+<div class="row mt-5 g-4">
+
+    {% for dish in dishes %}
+
+        <div class="col-md-4">
+
+            <div class="card border-0 shadow-lg overflow-hidden menu-card h-100">
+
+                {% if dish.image %}
+                    <img src="{{ dish.image.url }}"
+                         class="card-img-top"
+                         style="height:250px; object-fit:cover;">
+                {% endif %}
+
+                <div class="card-body">
+
+                    <h4>{{ dish.name }}</h4>
+
+                    <p>{{ dish.description }}</p>
+
+                    <strong class="text-danger">
+                        {{ dish.price }} грн
+                    </strong>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    {% endfor %}
+
+</div>
+
 {% endblock %}

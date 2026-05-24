@@ -1,73 +1,84 @@
 {% extends 'base.html' %}
 
 {% block content %}
-<div class="container mt-5" style="max-width: 900px;">
-    <h2>Меню</h2>
+
+<div class="container mt-5">
+    <h2 class="fw-bold mb-4">Меню</h2>
 
     {% for category in categories %}
-        <h3 class="mt-4">{{ category.name }}</h3>
 
-        <div class="row">
+        <h3 class="mb-4 mt-5">{{ category.name }}</h3>
+
+        <div class="row g-4">
+
             {% for dish in category.dishes.all %}
+
                 <div class="col-md-4">
 
-                    <div class="card mb-3 text-white" style="overflow: hidden; border-radius: 15px;">
+                    <div class="card border-0 shadow-lg h-100 overflow-hidden menu-card">
 
-                        <div style="
-                            background-image: url('{% if dish.image %}{{ dish.image.url }}{% endif %}');
-                            background-size: cover;
-                            background-position: center;
-                            height: 220px;
-                            position: relative;
-                        ">
+                        <div class="position-relative">
 
-                            <div style="
-                                position: absolute;
-                                top: 0;
-                                left: 0;
-                                width: 100%;
-                                height: 100%;
-                                background: rgba(0,0,0,0.5);
-                            "></div>
+                            {% if dish.image %}
+                                <img src="{{ dish.image.url }}"
+                                     class="card-img-top"
+                                     style="height:260px; object-fit:cover;">
+                            {% endif %}
 
-                            <div style="
-                                position: absolute;
-                                bottom: 10px;
-                                left: 15px;
-                                right: 15px;
-                            ">
-                                <a href="{% url 'dish_detail' dish.id %}" class="text-white text-decoration-none">
-                                    <h5>{{ dish.name }}</h5>
-                                </a>
+                            <div class="overlay"></div>
+
+                            <div class="position-absolute bottom-0 start-0 p-3 w-100 text-white">
+
+                                <h4 class="fw-bold">
+                                    <a href="{% url 'dish_detail' dish.id %}"
+                                       class="stretched-link text-white text-decoration-none">
+                                        {{ dish.name }}
+                                    </a>
+                                </h4>
 
                                 <p class="mb-1">{{ dish.description }}</p>
+
                                 <strong>{{ dish.price }} грн</strong>
+
                             </div>
 
                         </div>
 
-                        <div class="p-3 bg-white text-dark">
+                        <div class="card-body">
 
-                            <form method="post" action="{% url 'add_to_cart' dish.id %}">
+                            <form method="post"
+                                  action="{% url 'add_to_cart' dish.id %}">
                                 {% csrf_token %}
-                                <button type="submit" class="btn btn-success w-100">
+
+                                <button type="submit"
+                                        class="btn btn-danger w-100 rounded-pill">
+                                    <i class="bi bi-cart-fill"></i>
                                     В кошик
                                 </button>
                             </form>
 
-                            <a href="{% url 'like' dish.id %}" class="btn btn-outline-danger mt-2 w-100">
-                                ❤️ {{ dish.likes.count }}
-                            </a>
+                            <button class="btn btn-dark like-btn w-100 mt-2 rounded-pill"
+                                    data-id="{{ dish.id }}">
+
+                                <i class="bi bi-heart-fill"></i>
+
+                                <span>{{ dish.likes.count }}</span>
+
+                            </button>
 
                         </div>
 
                     </div>
 
                 </div>
+
             {% empty %}
                 <p>Немає страв</p>
             {% endfor %}
+
         </div>
+
     {% endfor %}
 </div>
+
 {% endblock %}
